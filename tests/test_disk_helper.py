@@ -1,12 +1,11 @@
 import os
 import threading
-import pytest
+
 from docker_evaluator.disk_helper import (
+    _CACHE_BASE,
     get_cache_dir,
     get_compile_lock,
     get_temp_dir,
-    clear_cache,
-    _CACHE_BASE,
 )
 
 
@@ -82,6 +81,7 @@ def test_get_temp_dir_each_call_returns_distinct_dir():
 
 def test_clear_cache_removes_cache_base(tmp_path, monkeypatch):
     import docker_evaluator.disk_helper as dh
+
     fake_cache = str(tmp_path / "compilation_cache")
     os.makedirs(fake_cache)
     open(os.path.join(fake_cache, "dummy"), "w").close()
@@ -92,5 +92,6 @@ def test_clear_cache_removes_cache_base(tmp_path, monkeypatch):
 
 def test_clear_cache_no_error_when_missing(monkeypatch):
     import docker_evaluator.disk_helper as dh
+
     monkeypatch.setattr(dh, "_CACHE_BASE", "/nonexistent/path/xyz")
     dh.clear_cache()  # should not raise

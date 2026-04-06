@@ -1,5 +1,7 @@
 import os
+
 from docker_evaluator.language_helpers.language_helper import LanguageHelper
+
 
 class Py2Helper(LanguageHelper):
     def __init__(self, docker_helper):

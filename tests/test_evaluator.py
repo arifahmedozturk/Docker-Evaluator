@@ -1,5 +1,5 @@
-import pytest
 from unittest.mock import MagicMock, patch
+
 from docker_evaluator.evaluator import DockerEvaluator
 
 
@@ -20,6 +20,7 @@ def _make_evaluator(language_output):
 
 
 # --- output matching ---
+
 
 def test_correct_when_output_matches():
     evaluator, _ = _make_evaluator("42\n__TIME__:10ms")
@@ -54,6 +55,7 @@ def test_whitespace_normalization_allows_trailing_newline():
 
 # --- error passthrough ---
 
+
 def test_time_limit_exceeded_is_not_correct():
     evaluator, _ = _make_evaluator("Time Limit Exceeded")
     result = evaluator.evaluate("code", "", "anything", "py3", 5)
@@ -82,6 +84,7 @@ def test_runtime_error_is_not_correct():
 
 # --- time suffix stripping ---
 
+
 def test_time_suffix_stripped_from_output_before_compare():
     # Without stripping, "42\n__TIME__:5ms" would not equal "42"
     evaluator, _ = _make_evaluator("42\n__TIME__:5ms")
@@ -97,6 +100,7 @@ def test_ok_time_unavailable_when_no_time_suffix():
 
 
 # --- memory floor ---
+
 
 def test_memory_limit_enforced_to_256mb_minimum():
     evaluator, mock_helper = _make_evaluator("ok\n__TIME__:1ms")
@@ -114,10 +118,8 @@ def test_memory_limit_above_floor_passed_through():
 
 # --- parameter forwarding ---
 
+
 def test_evaluate_forwards_input_type_and_file_io_name():
     evaluator, mock_helper = _make_evaluator("result\n__TIME__:1ms")
-    evaluator.evaluate("code", "stdin_data", "result", "py3", 5,
-                       input_type="file", file_io_name="data")
-    mock_helper.evaluate.assert_called_once_with(
-        "code", "stdin_data", 5, "file", "data", memory_limit=256 * 1024
-    )
+    evaluator.evaluate("code", "stdin_data", "result", "py3", 5, input_type="file", file_io_name="data")
+    mock_helper.evaluate.assert_called_once_with("code", "stdin_data", 5, "file", "data", memory_limit=256 * 1024)

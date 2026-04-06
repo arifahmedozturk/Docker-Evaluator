@@ -1,11 +1,12 @@
 [build-system]
 requires = ["setuptools>=61"]
-build-backend = "setuptools.backends.legacy:build"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "docker-evaluator"
 version = "0.1.0"
 description = "Generic code evaluation in isolated Docker containers"
+readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
     "docker>=7.1.0",
@@ -16,7 +17,26 @@ dependencies = [
 dev = [
     "pytest>=7.0",
     "pytest-mock>=3.0",
+    "ruff>=0.4.0",
 ]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes (unused imports, undefined names, etc.)
+    "I",   # isort (import ordering)
+    "UP",  # pyupgrade (modernise syntax)
+]
+ignore = [
+    "E501",  # line too long — handled by formatter, not linter
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["F841"]  # unused variables are fine in tests
 
 [tool.setuptools.packages.find]
 where = ["."]
