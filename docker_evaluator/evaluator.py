@@ -45,5 +45,7 @@ class DockerEvaluator:
                     return {"correct": False, "details": "Wrong Answer"}
                 return {"correct": True, "details": f"OK ({time_str})" if time_str else "OK (time unavailable)"}
 
+        raise ValueError(f"Unsupported language: {language!r}")
+
     def close(self):
         self.docker_helper.close()

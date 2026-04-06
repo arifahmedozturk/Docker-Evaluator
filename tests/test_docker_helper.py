@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock, patch
 
+import docker
 import pytest
 from docker.errors import ContainerError
 
@@ -19,33 +20,22 @@ def helper(mock_docker_client):
     return DockerHelper()
 
 
-def _make_image(tags):
-    img = MagicMock()
-    img.tags = tags
-    return img
-
-
 # --- image_exists ---
 
 
 def test_image_exists_returns_true_when_present(helper, mock_docker_client):
-    mock_docker_client.images.list.return_value = [_make_image(["docker-evaluator-py3:latest"])]
+    mock_docker_client.images.get.return_value = MagicMock()
     assert helper.image_exists("docker-evaluator-py3:latest") is True
 
 
 def test_image_exists_returns_false_when_absent(helper, mock_docker_client):
-    mock_docker_client.images.list.return_value = [_make_image(["other-image:latest"])]
+    mock_docker_client.images.get.side_effect = docker.errors.ImageNotFound("not found")
     assert helper.image_exists("docker-evaluator-py3:latest") is False
 
 
 def test_image_exists_returns_false_when_no_images(helper, mock_docker_client):
-    mock_docker_client.images.list.return_value = []
+    mock_docker_client.images.get.side_effect = docker.errors.ImageNotFound("not found")
     assert helper.image_exists("docker-evaluator-py3:latest") is False
-
-
-def test_image_exists_handles_multiple_tags_per_image(helper, mock_docker_client):
-    mock_docker_client.images.list.return_value = [_make_image(["a:latest", "docker-evaluator-c:latest"])]
-    assert helper.image_exists("docker-evaluator-c:latest") is True
 
 
 # --- create_image ---

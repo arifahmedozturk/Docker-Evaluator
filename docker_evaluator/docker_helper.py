@@ -10,11 +10,11 @@ class DockerHelper:
         self.client = docker.from_env()
 
     def image_exists(self, image_tag):
-        images = self.client.images.list()
-        image_names = []
-        for image in images:
-            image_names.extend(image.tags)
-        return image_tag in image_names
+        try:
+            self.client.images.get(image_tag)
+            return True
+        except docker.errors.ImageNotFound:
+            return False
 
     def create_image(self, image_path, image_tag):
         self.client.images.build(path=image_path, tag=image_tag)
