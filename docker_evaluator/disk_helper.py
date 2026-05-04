@@ -15,8 +15,14 @@ def get_compile_lock(cache_dir):
         return _compile_locks[cache_dir]
 
 
-_CACHE_BASE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "compilation_cache"))
-
+_CACHE_BASE = os.environ.get(
+    "COMPILATION_CACHE_DIR",
+    os.path.join(
+        os.path.expanduser("~"),
+        ".cache",
+        "compilation_cache"
+    )
+)
 
 def get_cache_dir(code, language):
     code_hash = hashlib.sha256(code.encode()).hexdigest()
